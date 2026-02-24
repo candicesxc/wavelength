@@ -13,6 +13,31 @@ interface ClueGivingScreenProps {
   psychicTarget: number | null;
 }
 
+const inputStyle: React.CSSProperties = {
+  background: '#2D2F50',
+  border: '2px solid #414364',
+  borderRadius: 10,
+  padding: '10px 14px',
+  color: '#F1ECC2',
+  fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+  fontSize: 15,
+  outline: 'none',
+  width: '100%',
+  boxSizing: 'border-box',
+  transition: 'border-color 0.15s',
+};
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  color: '#80AAB2',
+  fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+  marginBottom: 5,
+  display: 'block',
+};
+
 export const ClueGivingScreen: React.FC<ClueGivingScreenProps> = ({
   gameState,
   localPlayerId,
@@ -20,6 +45,7 @@ export const ClueGivingScreen: React.FC<ClueGivingScreenProps> = ({
 }) => {
   const [clue1, setClue1] = useState('');
   const [clue2, setClue2] = useState('');
+  const [focused, setFocused] = useState<string | null>(null);
 
   const round = gameState.round!;
   const localPlayer = gameState.players.find(p => p.id === localPlayerId);
@@ -28,92 +54,97 @@ export const ClueGivingScreen: React.FC<ClueGivingScreenProps> = ({
 
   const handleSubmit = () => {
     if (!clue1.trim() || !clue2.trim()) return;
-    socket.emit('round:submit_clues', {
-      clue1: clue1.trim(),
-      clue2: clue2.trim(),
-    });
+    socket.emit('round:submit_clues', { clue1: clue1.trim(), clue2: clue2.trim() });
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center px-4 py-8 gap-6">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 gap-5"
+      style={{ background: '#0F1132' }}>
+
       <PhaseHeader
         roundNumber={round.roundNumber}
         title={isLocalPsychic ? "You're the Psychic! 🔮" : "Psychic is thinking..."}
         subtitle={
           isLocalPsychic
-            ? "Look at the dial, then give 2 clues that hint at the target zone"
+            ? `Look at the dial — give 2 clues that hint at the target zone`
             : `${psychic?.name ?? 'The Psychic'} is preparing their clues`
         }
       />
 
       <ScoreBoard scoreA={gameState.scores.A} scoreB={gameState.scores.B} />
 
-      {/* Spectrum card */}
+      {/* Card display */}
       <SpectrumCardDisplay card={round.card} size="md" />
 
-      {/* Dial — Psychic sees the target zone, others see nothing */}
-      <SpectrumDial
-        position={50}
-        targetPosition={isLocalPsychic && psychicTarget !== null ? psychicTarget : undefined}
-        revealed={false}
-        isInteractive={false}
-        leftLabel={round.card.left}
-        rightLabel={round.card.right}
-      />
+      {/* Dial */}
+      <div style={{ width: '100%', maxWidth: 460 }}>
+        <SpectrumDial
+          position={50}
+          targetPosition={isLocalPsychic && psychicTarget !== null ? psychicTarget : undefined}
+          revealed={false}
+          isInteractive={false}
+          leftLabel={round.card.left}
+          rightLabel={round.card.right}
+        />
+      </div>
 
       {isLocalPsychic ? (
-        <div className="w-full max-w-sm flex flex-col gap-4">
-          <p className="text-slate-400 text-sm text-center">
-            The colored zone is the target. Give 2 clues that help your team guess where it is.
+        <div
+          style={{
+            width: '100%',
+            maxWidth: 380,
+            background: '#3F6F8E',
+            border: '2px solid #174766',
+            borderRadius: 16,
+            padding: '20px 20px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          }}
+        >
+          <p style={{ color: '#97BDC9', fontSize: 13, textAlign: 'center', margin: '0 0 14px', fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
+            The colored zone is the target. Give 2 clues to help your team.
           </p>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
-              Clue 1
-            </label>
+          <div style={{ marginBottom: 12 }}>
+            <label style={labelStyle}>Clue 1</label>
             <input
               type="text"
               value={clue1}
               onChange={e => setClue1(e.target.value)}
+              onFocus={() => setFocused('c1')}
+              onBlur={() => setFocused(null)}
               placeholder="First clue..."
               maxLength={60}
-              className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+              style={{ ...inputStyle, borderColor: focused === 'c1' ? '#E0AD42' : '#414364' }}
               autoFocus
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
-              Clue 2
-            </label>
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Clue 2</label>
             <input
               type="text"
               value={clue2}
               onChange={e => setClue2(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && clue1.trim() && clue2.trim()) handleSubmit();
-              }}
+              onFocus={() => setFocused('c2')}
+              onBlur={() => setFocused(null)}
+              onKeyDown={e => { if (e.key === 'Enter' && clue1.trim() && clue2.trim()) handleSubmit(); }}
               placeholder="Second clue..."
               maxLength={60}
-              className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+              style={{ ...inputStyle, borderColor: focused === 'c2' ? '#E0AD42' : '#414364' }}
             />
           </div>
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full"
-            disabled={!clue1.trim() || !clue2.trim()}
-            onClick={handleSubmit}
-          >
+          <Button variant="primary" size="lg" className="w-full" disabled={!clue1.trim() || !clue2.trim()} onClick={handleSubmit}>
             Submit Clues →
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex gap-2 items-center">
-            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-slate-400 text-sm">Waiting for clues...</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E0AD42', animation: 'pulse 1.5s infinite' }} />
+            <span style={{ color: '#97BDC9', fontSize: 14, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
+              Waiting for clues...
+            </span>
           </div>
-          <p className="text-slate-600 text-xs text-center max-w-xs">
-            The psychic is studying the dial. Only they can see the target zone right now.
+          <p style={{ color: '#4A6E8A', fontSize: 12, textAlign: 'center', maxWidth: 280, margin: 0, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
+            Only the Psychic can see the target zone right now.
           </p>
         </div>
       )}

@@ -13,14 +13,27 @@ function App() {
   const { gameState, psychicTarget, localPlayerId, error, clearError } = useGameState();
   const [isCardEditorOpen, setIsCardEditorOpen] = useState(false);
 
-  // Error toast
+  // Error toast — styled with original palette
   const errorBanner = error && (
     <div
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-900 border border-red-600 text-red-100 px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 cursor-pointer"
+      style={{
+        position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 999,
+        background: '#2D2F50',
+        border: '2px solid #B9373B',
+        color: '#F1ECC2',
+        padding: '12px 24px',
+        borderRadius: 16,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        display: 'flex', alignItems: 'center', gap: 12,
+        cursor: 'pointer',
+        fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+        fontSize: 14,
+      }}
       onClick={clearError}
     >
       <span>⚠️ {error}</span>
-      <span className="text-red-300 text-xs">tap to dismiss</span>
+      <span style={{ color: '#80AAB2', fontSize: 12 }}>tap to dismiss</span>
     </div>
   );
 

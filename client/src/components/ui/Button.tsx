@@ -5,15 +5,22 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
+// Colors from original device.js:
+//   button default: #2D2F50, hover: #414364, text: light gray (200) = #C8C8C8
+//   primary action: gold #E0AD42 with dark navy text
 const variantClasses: Record<string, string> = {
   primary:
-    'bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold shadow-lg shadow-amber-500/20',
+    'bg-game-gold hover:brightness-110 text-game-navy font-bold shadow-lg',
   secondary:
-    'bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-600',
-  danger: 'bg-red-600 hover:bg-red-500 text-white',
-  'team-a': 'bg-blue-600 hover:bg-blue-500 text-white font-bold',
-  'team-b': 'bg-red-600 hover:bg-red-500 text-white font-bold',
-  ghost: 'bg-transparent hover:bg-slate-700 text-slate-300 border border-slate-600',
+    'bg-game-navy-mid hover:bg-game-navy-hover text-[#C8C8C8] border border-[#414364]',
+  danger:
+    'bg-[#B9373B] hover:bg-[#CD4B4F] text-[#F1ECC2] font-bold',
+  'team-a':
+    'bg-[#97BDC9] hover:brightness-110 text-game-navy font-bold',
+  'team-b':
+    'bg-[#DF6B50] hover:brightness-110 text-[#F1ECC2] font-bold',
+  ghost:
+    'bg-transparent hover:bg-[#2D2F50] text-[#C8C8C8] border border-[#414364]',
 };
 
 const sizeClasses: Record<string, string> = {
@@ -40,6 +47,7 @@ export const Button: React.FC<ButtonProps> = ({
         ${sizeClasses[size]}
         ${className}
       `}
+      style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}
       disabled={disabled}
       {...rest}
     >

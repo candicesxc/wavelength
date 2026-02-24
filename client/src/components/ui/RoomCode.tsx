@@ -10,31 +10,59 @@ export const RoomCode: React.FC<RoomCodeProps> = ({ code }) => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback — just show copied state if clipboard API fails
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    } catch { /* ignore */ }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="flex flex-col items-center gap-1">
-      <span className="text-xs text-slate-400 uppercase tracking-widest">Room Code</span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: '#80AAB2',
+          fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+        }}
+      >
+        Room Code
+      </span>
       <button
         onClick={handleCopy}
-        className="group flex items-center gap-3 bg-slate-800 border border-slate-600 rounded-2xl px-6 py-3 hover:border-amber-500 transition-all"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: '#2D2F50',
+          border: `2px solid ${copied ? '#E0AD42' : '#414364'}`,
+          borderRadius: 16,
+          padding: '10px 24px',
+          cursor: 'pointer',
+          transition: 'border-color 0.2s',
+          outline: 'none',
+        }}
         title="Click to copy"
       >
-        <span className="text-3xl font-mono font-bold tracking-[0.3em] text-amber-400">
+        <span
+          style={{
+            fontSize: 32,
+            fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+            fontWeight: 900,
+            letterSpacing: '0.3em',
+            color: '#E0AD42',
+          }}
+        >
           {code}
         </span>
-        <span className="text-slate-500 group-hover:text-amber-400 transition-colors text-sm">
+        <span style={{ fontSize: 13, color: copied ? '#E0AD42' : '#80AAB2', transition: 'color 0.2s' }}>
           {copied ? '✓ Copied!' : '📋'}
         </span>
       </button>
-      <span className="text-xs text-slate-500">Share this code with friends</span>
+      <span style={{ fontSize: 11, color: '#4A6E8A', fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
+        Share this code with friends
+      </span>
     </div>
   );
 };

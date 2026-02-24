@@ -8,8 +8,17 @@
 
 body {
   margin: 0;
-  background-color: #0F172A;
-  color: #F8FAFC;
+  /* Original game navy background */
+  background-color: #0F1132;
+  color: #F1ECC2;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Game board surface — the blue-gray board from original */
+.game-board {
+  background-color: #3F6F8E;
+  border: 3px solid #174766;
+  border-radius: 14px;
 }

@@ -10,6 +10,23 @@ interface TeamPanelProps {
   disabled?: boolean;
 }
 
+const TEAM_STYLES = {
+  A: {
+    border: '#2A5A7A',
+    bg: 'rgba(42,90,122,0.35)',
+    labelColor: '#97BDC9',
+    dotColor: '#97BDC9',
+    label: 'Left Brain',
+  },
+  B: {
+    border: '#7A3522',
+    bg: 'rgba(122,53,34,0.35)',
+    labelColor: '#DF6B50',
+    dotColor: '#DF6B50',
+    label: 'Right Brain',
+  },
+};
+
 export const TeamPanel: React.FC<TeamPanelProps> = ({
   team,
   players,
@@ -19,37 +36,52 @@ export const TeamPanel: React.FC<TeamPanelProps> = ({
 }) => {
   const teamPlayers = players.filter(p => p.team === team);
   const localInTeam = teamPlayers.some(p => p.id === localPlayerId);
-  const isTeamA = team === 'A';
+  const ts = TEAM_STYLES[team];
 
   return (
     <div
-      className={`flex flex-col gap-3 p-4 rounded-2xl border ${
-        isTeamA
-          ? 'bg-blue-950/30 border-blue-800/40'
-          : 'bg-red-950/30 border-red-800/40'
-      } min-h-[160px] flex-1`}
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        padding: 16,
+        borderRadius: 16,
+        border: `2px solid ${ts.border}`,
+        background: ts.bg,
+        minHeight: 160,
+        fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+      }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${isTeamA ? 'bg-blue-500' : 'bg-red-500'}`} />
-          <span className={`font-bold text-lg ${isTeamA ? 'text-blue-400' : 'text-red-400'}`}>
-            Team {team}
-          </span>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: ts.dotColor }} />
+          <span style={{ fontWeight: 700, fontSize: 16, color: ts.labelColor }}>{ts.label}</span>
         </div>
-        <span className="text-xs text-slate-500">{teamPlayers.length} player{teamPlayers.length !== 1 ? 's' : ''}</span>
+        <span style={{ fontSize: 11, color: '#80AAB2' }}>
+          {teamPlayers.length} player{teamPlayers.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
-      <div className="flex flex-col gap-1.5 flex-1">
+      {/* Players */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
         {teamPlayers.length === 0 ? (
-          <span className="text-slate-600 text-sm italic">No players yet</span>
+          <span style={{ color: '#4A6E8A', fontSize: 13, fontStyle: 'italic' }}>No players yet</span>
         ) : (
           teamPlayers.map(p => (
-            <div key={p.id} className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isTeamA ? 'bg-blue-400' : 'bg-red-400'}`} />
-              <span className={`text-sm ${p.id === localPlayerId ? 'text-white font-semibold' : 'text-slate-300'}`}>
+            <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: ts.dotColor, opacity: 0.6 }} />
+              <span
+                style={{
+                  fontSize: 13,
+                  color: p.id === localPlayerId ? '#F1ECC2' : '#97BDC9',
+                  fontWeight: p.id === localPlayerId ? 700 : 400,
+                }}
+              >
                 {p.name}
                 {p.id === localPlayerId && ' (you)'}
-                {p.isHost && <span className="ml-1 text-amber-400 text-xs">👑</span>}
+                {p.isHost && ' 👑'}
               </span>
             </div>
           ))
@@ -58,12 +90,12 @@ export const TeamPanel: React.FC<TeamPanelProps> = ({
 
       {!localInTeam && !disabled && (
         <Button
-          variant={isTeamA ? 'team-a' : 'team-b'}
+          variant={team === 'A' ? 'team-a' : 'team-b'}
           size="sm"
           onClick={() => onJoinTeam(team)}
           className="w-full mt-auto"
         >
-          Join Team {team}
+          Join {ts.label}
         </Button>
       )}
     </div>

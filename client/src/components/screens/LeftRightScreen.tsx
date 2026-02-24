@@ -17,72 +17,71 @@ export const LeftRightScreen: React.FC<LeftRightScreenProps> = ({ gameState, loc
   const localPlayer = gameState.players.find(p => p.id === localPlayerId);
   const opposingTeam = round.activeTeam === 'A' ? 'B' : 'A';
   const isOpposingTeam = localPlayer?.team === opposingTeam;
+  const psychic = gameState.players.find(p => p.isPsychic);
 
   const handleVote = (guess: 'left' | 'right') => {
     socket.emit('round:lock_left_right', { guess });
   };
 
-  const psychic = gameState.players.find(p => p.isPsychic);
-
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center px-4 py-8 gap-6">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 gap-5"
+      style={{ background: '#0F1132' }}>
+
       <PhaseHeader
         roundNumber={round.roundNumber}
         title={isOpposingTeam ? 'Left or Right? 🤔' : 'Waiting for opposing team...'}
         subtitle={
           isOpposingTeam
             ? `Is the real target to the LEFT or RIGHT of where Team ${round.activeTeam} guessed?`
-            : `Team ${opposingTeam} is deciding if the target is left or right of the dial`
+            : `Team ${opposingTeam} is deciding left or right`
         }
       />
 
       <ScoreBoard scoreA={gameState.scores.A} scoreB={gameState.scores.B} />
 
       {/* Clues */}
-      <div className="flex flex-col items-center gap-2">
-        <span className="text-xs text-slate-500 uppercase tracking-wider">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 11, color: '#80AAB2', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
           Psychic's Clues ({psychic?.name ?? '?'})
         </span>
-        <div className="flex gap-3 flex-wrap justify-center">
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
           {round.clue1 && (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-2">
-              <span className="text-amber-300 font-semibold text-lg">{round.clue1}</span>
+            <div style={{ background: '#2D2F50', border: '2px solid #E0AD42', borderRadius: 12, padding: '8px 18px' }}>
+              <span style={{ color: '#E0AD42', fontWeight: 700, fontSize: 16, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>{round.clue1}</span>
             </div>
           )}
           {round.clue2 && (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-2">
-              <span className="text-amber-300 font-semibold text-lg">{round.clue2}</span>
+            <div style={{ background: '#2D2F50', border: '2px solid #E0AD42', borderRadius: 12, padding: '8px 18px' }}>
+              <span style={{ color: '#E0AD42', fontWeight: 700, fontSize: 16, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>{round.clue2}</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Spectrum card */}
       <SpectrumCardDisplay card={round.card} size="md" />
 
-      {/* Dial — shows where team A guessed, target still hidden */}
-      <SpectrumDial
-        position={round.dialPosition}
-        targetPosition={undefined}
-        revealed={false}
-        isInteractive={false}
-        leftLabel={round.card.left}
-        rightLabel={round.card.right}
-      />
+      <div style={{ width: '100%', maxWidth: 460 }}>
+        <SpectrumDial
+          position={round.dialPosition}
+          targetPosition={undefined}
+          revealed={false}
+          isInteractive={false}
+          leftLabel={round.card.left}
+          rightLabel={round.card.right}
+        />
+      </div>
 
-      {/* The needle position label */}
-      <p className="text-slate-400 text-sm text-center">
+      <p style={{ color: '#97BDC9', fontSize: 13, textAlign: 'center', margin: 0, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
         Team {round.activeTeam} locked their needle here ↑
       </p>
 
-      {/* Voting buttons for opposing team */}
       {isOpposingTeam && !round.leftRightGuess && (
-        <div className="flex gap-4">
+        <div style={{ display: 'flex', gap: 12 }}>
           <Button
             variant="secondary"
             size="lg"
             onClick={() => handleVote('left')}
-            className="flex-1 border-blue-600 hover:bg-blue-900 text-blue-300"
+            style={{ border: '2px solid #97BDC9', color: '#97BDC9' }}
           >
             ← Left
           </Button>
@@ -90,7 +89,7 @@ export const LeftRightScreen: React.FC<LeftRightScreenProps> = ({ gameState, loc
             variant="secondary"
             size="lg"
             onClick={() => handleVote('right')}
-            className="flex-1 border-red-600 hover:bg-red-900 text-red-300"
+            style={{ border: '2px solid #DF6B50', color: '#DF6B50' }}
           >
             Right →
           </Button>
@@ -98,17 +97,17 @@ export const LeftRightScreen: React.FC<LeftRightScreenProps> = ({ gameState, loc
       )}
 
       {round.leftRightGuess && (
-        <div className="text-center">
-          <span className="text-slate-400 text-sm">
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ color: '#97BDC9', fontSize: 14, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
             Team {opposingTeam} guessed:{' '}
-            <span className="text-white font-bold uppercase">{round.leftRightGuess}</span>
+            <span style={{ color: '#F1ECC2', fontWeight: 700, textTransform: 'uppercase' }}>{round.leftRightGuess}</span>
           </span>
         </div>
       )}
 
       {!isOpposingTeam && (
-        <div className="flex gap-2 items-center text-slate-500 text-sm">
-          <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#80AAB2', fontSize: 14, fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif' }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E0AD42', animation: 'pulse 1.5s infinite' }} />
           Team {opposingTeam} is voting...
         </div>
       )}
